@@ -390,7 +390,7 @@ class PowerFunction(ArithmeticFunction):
         return n**self.k
 
     def call_on_canon(self, canon: Canon):
-        return canon**self.k
+        return (canon**self.k).int_value
 
     @property
     def formula(self) -> str:
