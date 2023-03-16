@@ -124,22 +124,17 @@ class ArithmeticFunction(ABC):
         return DirichletProduct(self, g)
 
     def inverse(self) -> "ArithmeticFunction":
-        """Special methods which returns dirichlet inverse.
-
-        So we can write ~f for dirichlet inverse.
-        """
+        """Dirichlet inverse."""
         if self.completely_multiplicative:
             return PointwiseProduct(mobius, self)
         else:
             return DirichletInverse(self)
-    
+
     def __pow__(self, power):
         if power >= 0:
-            return math.prod(itertools.repeat(self, power), start = identity)
+            return math.prod(itertools.repeat(self, power), start=identity)
         else:
-            return math.prod(itertools.repeat(self.inverse(), -power), start = identity)
-
-
+            return math.prod(itertools.repeat(self.inverse(), -power), start=identity)
 
 
 class DirichletInverse(ArithmeticFunction):
@@ -150,16 +145,16 @@ class DirichletInverse(ArithmeticFunction):
             self.category = Category.multiplicative
 
     def call_on_canon(self, canon: Canon) -> Real:
-        return self.inverse(canon)
+        return self.invert(canon)
 
-    def inverse(self, n: Canon) -> Real:
+    def invert(self, n: Canon) -> Real:
         if n.int_value == 1:
             return 1 / n.int_value
         else:
             return (
                 -1
                 / self.f(1)
-                * sum([self.f(n / d) * self.inverse(d) for d in n.divisors() if d < n])
+                * sum([self.f(n / d) * self.invert(d) for d in n.divisors() if d < n])
             )
 
     @property
@@ -220,7 +215,7 @@ class DirichletProduct(ArithmeticFunction):
         return sum((self.f(d) * self.g(n / d) for d in n.divisors()))
 
     def inverse(self) -> ArithmeticFunction:
-        return (~self.f) * (~self.g)
+        return (self.f ** -1) * (self.g ** -1)
 
     @property
     def formula(self) -> str:
