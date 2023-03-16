@@ -1,4 +1,5 @@
 """Arithmetical functions."""
+import itertools
 import math
 from enum import Enum, auto
 from numbers import Real
@@ -122,7 +123,7 @@ class ArithmeticFunction(ABC):
         """
         return DirichletProduct(self, g)
 
-    def __invert__(self) -> "ArithmeticFunction":
+    def inverse(self) -> "ArithmeticFunction":
         """Special methods which returns dirichlet inverse.
 
         So we can write ~f for dirichlet inverse.
@@ -131,6 +132,14 @@ class ArithmeticFunction(ABC):
             return PointwiseProduct(mobius, self)
         else:
             return DirichletInverse(self)
+    
+    def __pow__(self, power):
+        if power >= 0:
+            return math.prod(itertools.repeat(self, power), start = identity)
+        else:
+            return math.prod(itertools.repeat(self.inverse(), -power), start = identity)
+
+
 
 
 class DirichletInverse(ArithmeticFunction):
@@ -157,7 +166,7 @@ class DirichletInverse(ArithmeticFunction):
     def formula(self) -> str:
         return f"{self.f.formula}⁻¹"
 
-    def __invert__(self) -> ArithmeticFunction:
+    def inverse(self) -> ArithmeticFunction:
         return self.f
 
 
@@ -210,7 +219,7 @@ class DirichletProduct(ArithmeticFunction):
     def call_on_canon(self, n: Canon) -> Real:
         return sum((self.f(d) * self.g(n / d) for d in n.divisors()))
 
-    def __invert__(self) -> ArithmeticFunction:
+    def inverse(self) -> ArithmeticFunction:
         return (~self.f) * (~self.g)
 
     @property
@@ -324,7 +333,7 @@ class TotientFunction(MultiplicativeFunction):
     def call_on_prime(self, prime, power):
         return prime ** (power - 1) * (prime - 1)
 
-    def __invert__(self):
+    def inverse(self):
         return totient_inverse
 
     @property
@@ -339,7 +348,7 @@ class TotientInverseFunction(MultiplicativeFunction):
     def call_on_prime(self, prime, power):
         return 1 - prime
 
-    def __invert__(self):
+    def inverse(self):
         return totient
 
     @property
@@ -363,7 +372,7 @@ class MobiusFunction(MultiplicativeFunction):
     def call_on_prime(self, _: int, power: int):
         return 0 if power > 1 else -1
 
-    def __invert__(self) -> ArithmeticFunction:
+    def inverse(self) -> ArithmeticFunction:
         return unit
 
     @property
@@ -425,7 +434,7 @@ class IdentityFunction(ArithmeticFunction):
     def call_on_canon(self, canon: Canon):
         return 1 if canon.is_unit() else 0
 
-    def __invert__(self):
+    def inverse(self):
         return self
 
     def __mul__(self, g):
@@ -453,7 +462,7 @@ class UnitFunction(ArithmeticFunction):
     def call_on_canon(self, canon: Canon):
         return 1
 
-    def __invert__(self):
+    def inverse(self):
         return mobius
 
     @property
@@ -534,7 +543,7 @@ class LiouvilleFunction(MultiplicativeFunction):
     def call_on_prime(self, prime: int, power: int):
         return (-1) ** power
 
-    def __invert__(self):
+    def inverse(self):
         return mobius * mobius
 
     @property

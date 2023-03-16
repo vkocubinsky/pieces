@@ -36,9 +36,9 @@ class TestTotient:
         assert totient.formula == "φ"
 
     def test_equality(self):
-        assert (~totient) == totient_inverse
-        assert ~~totient == totient
-        assert (~totient).formula == "φ⁻¹"
+        assert totient ** -1  == totient_inverse
+        assert (totient ** -1) ** -1 == totient
+        assert (totient ** -1).formula == "φ⁻¹"
         assert totient * totient_inverse == identity
 
 
@@ -65,8 +65,8 @@ class TestMobius:
         assert mobius.formula == "μ"
 
     def test_equality(self):
-        assert (~mobius) == unit
-        assert (~mobius).formula == "u"
+        assert mobius ** -1 == unit
+        assert (mobius ** -1).formula == "u"
         assert mobius * unit == identity
 
 
@@ -113,7 +113,7 @@ class TestIdentity:
 
     def test_inverse(self):
         assert identity * identity == identity
-        assert ~identity == identity
+        assert identity ** -1 == identity
 
 
 class TestN:
@@ -125,7 +125,7 @@ class TestN:
         assert N.formula == 'N'
 
     def test_inverse(self):
-        assert N * (~N) == identity
+        assert N * (N**-1) == identity
 
 
 
