@@ -3,6 +3,7 @@ import pytest
 from pieces.ntheory.functions import (
     I,
     N,
+    DivisorsSumFunction,
     big_omega,
     d,
     little_omega,
@@ -190,3 +191,33 @@ class TestDivisorsSum:
 
     def test_inverse(self):
         assert sigma * (sigma**-1) == I
+
+
+class TestSquareDivisorSum:
+    
+
+    @pytest.mark.parametrize(
+        "k,expected",
+        [
+            (1, 1),
+            (2, 5),
+            (3, 10),
+            (4, 21),
+            (5, 26),
+            (6, 50),
+            (7, 50),
+            (8, 85),
+            (9, 91),
+            (10, 130),
+        ],
+    )
+    def test_values(self, k, expected):
+        sigma2 = DivisorsSumFunction(2)
+        assert sigma2(k) == expected
+
+    def test_inverse(self):
+        sigma2 = DivisorsSumFunction(2)
+        assert sigma2 * (sigma2**-1) == I
+
+
+

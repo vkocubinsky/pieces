@@ -338,7 +338,7 @@ class TotientInverseFunction(MultiplicativeFunction):
         return totient
 
     def __repr__(self) -> str:
-        return "totient ** -1"
+        return "totient_inverse"
 
 
 totient_inverse = TotientInverseFunction()
@@ -401,9 +401,9 @@ class IdentityFunction(ArithmeticFunction):
         | 0 if n > 1
     ```
 
-    >>> identity(1)
+    >>> I(1)
     1
-    >>> identity(5)
+    >>> I(5)
     0
     """
 
@@ -507,6 +507,9 @@ class DivisorsSumFunction(MultiplicativeFunction):
             return "sigma"
         else:
             return f"DivisorSumFunction({self.divisor_power})"
+
+    def inverse(self):
+        return PointwiseProduct(mobius, PowerFunction(self.divisor_power)) * mobius
 
 
 sigma = DivisorsSumFunction(1)
