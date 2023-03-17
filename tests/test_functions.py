@@ -9,7 +9,7 @@ from pieces.ntheory.functions import (
     little_omega,
     mobius,
     sigma,
-    tau,
+    d,
     totient,
     totient_inverse,
     unit,
@@ -40,7 +40,7 @@ class TestTotient:
 
     def test_equality(self):
         assert totient**-1 == totient_inverse
-        assert totient * totient_inverse == identity
+        assert totient * (totient ** -1) == identity
 
 
 class TestMobius:
@@ -67,7 +67,7 @@ class TestMobius:
 
     def test_equality(self):
         assert mobius**-1 == unit
-        assert mobius * unit == identity
+        assert mobius * (mobius ** -1) == identity
 
 
 class TestLittleOmega:
@@ -113,7 +113,7 @@ class TestIdentity:
 
     def test_inverse(self):
         assert identity**-1 == identity
-        assert identity * identity == identity
+        assert identity * (identity ** -1) == identity
 
 
 class TestN:
@@ -138,10 +138,10 @@ class TestUnit:
 
     def test_inverse(self):
         assert unit**-1 == mobius
-        assert unit * mobius == identity
+        assert unit * (unit ** -1) == identity
 
 
-class TestTau:
+class TestNumberOfDivisors:
     @pytest.mark.parametrize(
         "k,expected",
         [
@@ -157,10 +157,40 @@ class TestTau:
             (10, 4),
         ],
     )
-    # tau = u * u
     def test_values(self, k, expected):
-        assert tau(k) == expected
+        assert d(k) == expected
 
     def test_formula(self):
-        assert tau.formula == 'τ'
+        assert d.formula == 'd'
+
+    def test_inverse(self):
+        assert d**-1 == mobius * mobius
+        assert d * (d ** -1) == identity
+
+
+class TestDivisorsSum:
+    @pytest.mark.parametrize(
+        "k,expected",
+        [
+            (1, 1),
+            (2, 3),
+            (3, 4),
+            (4, 7),
+            (5, 6),
+            (6, 12),
+            (7, 8),
+            (8, 15),
+            (9, 13),
+            (10, 18),
+        ],
+    )
+    def test_values(self, k, expected):
+        assert sigma(k) == expected
+
+    def test_formula(self):
+        assert sigma.formula == 'σ'
+
+    def test_inverse(self):
+        assert sigma * (sigma ** -1) == identity
+
 

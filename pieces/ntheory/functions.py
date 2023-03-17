@@ -3,6 +3,7 @@ import itertools
 import math
 from enum import Enum, auto
 from numbers import Real
+from pieces.checks import check_positive
 
 from pieces.ntheory.canon import Canon
 
@@ -13,8 +14,8 @@ __all__ = [
     "totient_inverse",
     "little_omega",
     "big_omega",
+    "d",
     "sigma",
-    "tau",
     "N",
     "identity",
     "unit",
@@ -468,6 +469,28 @@ class UnitFunction(ArithmeticFunction):
 unit = UnitFunction()
 
 
+class NumberOfDivisors(MultiplicativeFunction):
+    r"""Number of divisor function.
+
+    ```
+    d(n) = sum(1 : for all d \ n)
+    ```
+
+    Number of divisor function denoted by `d(n)`.
+    """
+    def call_on_prime(self, prime: int, power: int):
+        return power + 1
+
+    @property
+    def formula(self):
+        return "d"
+
+    def inverse(self) -> "ArithmeticFunction":
+        return mobius * mobius
+
+d = NumberOfDivisors()
+
+
 class DivisorsSumFunction(MultiplicativeFunction):
     r"""Divisors sum function.
 
@@ -487,26 +510,19 @@ class DivisorsSumFunction(MultiplicativeFunction):
 
     def __init__(self, divisor_power):
         super().__init__()
-        self.divisor_power = divisor_power
+        self.divisor_power = check_positive(divisor_power)
 
     def call_on_prime(self, prime: int, power: int):
-        if self.divisor_power == 0:
-            return power + 1
-        else:
-            pa = prime**self.divisor_power
-            return int((pa ** (power + 1) - 1) / (pa - 1))
+        pa = prime**self.divisor_power
+        return int((pa ** (power + 1) - 1) / (pa - 1))
 
     @property
     def formula(self) -> str:
-        if self.divisor_power == 0:
-            return "τ"
-        elif self.divisor_power == 1:
+        if self.divisor_power == 1:
             return "σ"
         else:
             return f"σ({self.divisor_power})"
 
-
-tau = DivisorsSumFunction(0)
 sigma = DivisorsSumFunction(1)
 
 
