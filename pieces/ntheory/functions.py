@@ -391,7 +391,6 @@ class PowerFunction(ArithmeticFunction):
 
 N = PowerFunction(1)
 
-
 class IdentityFunction(ArithmeticFunction):
     """Identity function I is defined as
 
@@ -454,7 +453,7 @@ class UnitFunction(ArithmeticFunction):
 u = UnitFunction()
 
 
-class NumberOfDivisors(MultiplicativeFunction):
+class DivisorsCount(MultiplicativeFunction):
     r"""Number of divisor function.
 
     ```
@@ -474,7 +473,7 @@ class NumberOfDivisors(MultiplicativeFunction):
         return mobius * mobius
 
 
-d = NumberOfDivisors()
+d = DivisorsCount()
 
 
 class DivisorsSumFunction(MultiplicativeFunction):
