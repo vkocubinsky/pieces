@@ -3,8 +3,8 @@ import itertools
 import math
 from enum import Enum, auto
 from numbers import Real
-from pieces.checks import check_positive
 
+from pieces.checks import check_positive
 from pieces.ntheory.canon import Canon
 
 __all__ = [
@@ -17,8 +17,8 @@ __all__ = [
     "d",
     "sigma",
     "N",
-    "identity",
-    "unit",
+    "I",
+    "u",
     "liouville",
     "mangoldt",
 ]
@@ -85,12 +85,8 @@ class ArithmeticFunction(ABC):
     def completely_additive(self):
         return self.category == Category.completely_additive
 
-    def __str__(self):
-        return self.formula
-
-    @property
     @abstractmethod
-    def formula(self) -> str:
+    def __repr__(self) -> str:
         ...
 
     def __call__(self, n: int | Canon) -> Real:
@@ -133,9 +129,9 @@ class ArithmeticFunction(ABC):
 
     def __pow__(self, power):
         if power >= 0:
-            return math.prod(itertools.repeat(self, power), start=identity)
+            return math.prod(itertools.repeat(self, power), start=I)
         else:
-            return math.prod(itertools.repeat(self.inverse(), -power), start=identity)
+            return math.prod(itertools.repeat(self.inverse(), -power), start=I)
 
 
 class DirichletInverse(ArithmeticFunction):
@@ -158,9 +154,8 @@ class DirichletInverse(ArithmeticFunction):
                 * sum([self.f(n / d) * self.invert(d) for d in n.divisors() if d < n])
             )
 
-    @property
-    def formula(self) -> str:
-        return f"{self.f.formula}⁻¹"
+    def __repr__(self) -> str:
+        return f"{self.f!r} ** -1"
 
     def inverse(self) -> ArithmeticFunction:
         return self.f
@@ -172,7 +167,7 @@ class PointwiseProduct(ArithmeticFunction):
     Pointwise product of two arithmetic functions `f` and `g` is defined as usual
     function multiplication:
     ```
-    (f ∙ g)(n) = f(n) * g(n)
+    (fg)(n) = f(n) * g(n)
     ```
     """
 
@@ -187,9 +182,8 @@ class PointwiseProduct(ArithmeticFunction):
     def call_on_int(self, n: int) -> Real:
         return self.f(n) * self.g(n)
 
-    @property
-    def formula(self) -> str:
-        return f"{self.f.formula} ∙ {self.g.formula}"
+    def __repr__(self) -> str:
+        return f"PointwiseProduct({self.f!r},{self.g!r})"
 
 
 class DirichletProduct(ArithmeticFunction):
@@ -216,11 +210,10 @@ class DirichletProduct(ArithmeticFunction):
         return sum((self.f(d) * self.g(n / d) for d in n.divisors()))
 
     def inverse(self) -> ArithmeticFunction:
-        return (self.f ** -1) * (self.g ** -1)
+        return (self.f**-1) * (self.g**-1)
 
-    @property
-    def formula(self) -> str:
-        return f"{self.f} * {self.g}"
+    def __repr__(self) -> str:
+        return f"({self.f!r} * {self.g!r})"
 
 
 class AdditiveFunction(ArithmeticFunction):
@@ -275,9 +268,8 @@ class DistinctPrimesFunction(AdditiveFunction):
     def call_on_prime(self, prime: int, power: int):
         return 1
 
-    @property
-    def formula(self) -> str:
-        return "ω"
+    def __repr__(self) -> str:
+        return "little_omega"
 
 
 little_omega = DistinctPrimesFunction()
@@ -304,9 +296,8 @@ class TotalPrimesFunction(AdditiveFunction):
     def call_on_prime(self, prime: int, power: int):
         return power
 
-    @property
-    def formula(self) -> str:
-        return "Ω"
+    def __repr__(self) -> str:
+        return "big_omega"
 
 
 big_omega = TotalPrimesFunction()
@@ -332,9 +323,8 @@ class TotientFunction(MultiplicativeFunction):
     def inverse(self):
         return totient_inverse
 
-    @property
-    def formula(self) -> str:
-        return "φ"
+    def __repr__(self) -> str:
+        return "totient"
 
 
 totient = TotientFunction()
@@ -347,9 +337,8 @@ class TotientInverseFunction(MultiplicativeFunction):
     def inverse(self):
         return totient
 
-    @property
-    def formula(self) -> str:
-        return "φ⁻¹"
+    def __repr__(self) -> str:
+        return "totient ** -1"
 
 
 totient_inverse = TotientInverseFunction()
@@ -369,11 +358,10 @@ class MobiusFunction(MultiplicativeFunction):
         return 0 if power > 1 else -1
 
     def inverse(self) -> ArithmeticFunction:
-        return unit
+        return u
 
-    @property
-    def formula(self) -> str:
-        return "μ"
+    def __repr__(self) -> str:
+        return "mobius"
 
 
 mobius = MobiusFunction()
@@ -397,9 +385,8 @@ class PowerFunction(ArithmeticFunction):
     def call_on_canon(self, canon: Canon):
         return (canon**self.k).int_value
 
-    @property
-    def formula(self) -> str:
-        return "N" if self.k == 1 else f"N^{self.k}"
+    def __repr__(self) -> str:
+        return "N" if self.k == 1 else f"N **{self.k}"
 
 
 N = PowerFunction(1)
@@ -436,12 +423,11 @@ class IdentityFunction(ArithmeticFunction):
     def __mul__(self, g):
         return g
 
-    @property
-    def formula(self) -> str:
+    def __repr__(self) -> str:
         return "I"
 
 
-identity = IdentityFunction()
+I = IdentityFunction()
 
 
 class UnitFunction(ArithmeticFunction):
@@ -461,12 +447,11 @@ class UnitFunction(ArithmeticFunction):
     def inverse(self):
         return mobius
 
-    @property
-    def formula(self) -> str:
+    def __repr__(self) -> str:
         return "u"
 
 
-unit = UnitFunction()
+u = UnitFunction()
 
 
 class NumberOfDivisors(MultiplicativeFunction):
@@ -478,15 +463,16 @@ class NumberOfDivisors(MultiplicativeFunction):
 
     Number of divisor function denoted by `d(n)`.
     """
+
     def call_on_prime(self, prime: int, power: int):
         return power + 1
 
-    @property
-    def formula(self):
+    def __repr__(self):
         return "d"
 
     def inverse(self) -> "ArithmeticFunction":
         return mobius * mobius
+
 
 d = NumberOfDivisors()
 
@@ -516,12 +502,12 @@ class DivisorsSumFunction(MultiplicativeFunction):
         pa = prime**self.divisor_power
         return int((pa ** (power + 1) - 1) / (pa - 1))
 
-    @property
-    def formula(self) -> str:
+    def __repr__(self) -> str:
         if self.divisor_power == 1:
-            return "σ"
+            return "sigma"
         else:
-            return f"σ({self.divisor_power})"
+            return f"DivisorSumFunction({self.divisor_power})"
+
 
 sigma = DivisorsSumFunction(1)
 
@@ -538,9 +524,8 @@ class MangoldtFunction(ArithmeticFunction):
         else:
             return 0
 
-    @property
-    def formula(self) -> str:
-        return "Λ"
+    def __repr__(self) -> str:
+        return "mangoldt"
 
 
 mangoldt = MangoldtFunction()  #: pre-built instance of :class:`MangoldtFunction`
@@ -557,9 +542,8 @@ class LiouvilleFunction(MultiplicativeFunction):
     def inverse(self):
         return mobius * mobius
 
-    @property
-    def formula(self) -> str:
-        return "λ"
+    def __repr__(self) -> str:
+        return "liouville"
 
 
 liouville = LiouvilleFunction()

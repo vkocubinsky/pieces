@@ -1,18 +1,16 @@
-from math import exp
-
 import pytest
 
 from pieces.ntheory.functions import (
+    I,
     N,
     big_omega,
-    identity,
+    d,
     little_omega,
     mobius,
     sigma,
-    d,
     totient,
     totient_inverse,
-    unit,
+    u,
 )
 
 
@@ -35,12 +33,12 @@ class TestTotient:
     def test_values(self, k, expected):
         assert totient(k) == expected
 
-    def test_formula(self):
-        assert totient.formula == "φ"
+    def test_repr(self):
+        assert repr(totient) == "totient"
 
     def test_equality(self):
         assert totient**-1 == totient_inverse
-        assert totient * (totient ** -1) == identity
+        assert totient * (totient**-1) == I
 
 
 class TestMobius:
@@ -62,12 +60,12 @@ class TestMobius:
     def test_values(self, k, expected):
         assert mobius(k) == expected
 
-    def test_formula(self):
-        assert mobius.formula == "μ"
+    def test_repr(self):
+        assert repr(mobius) == "mobius"
 
     def test_equality(self):
-        assert mobius**-1 == unit
-        assert mobius * (mobius ** -1) == identity
+        assert mobius**-1 == u
+        assert mobius * (mobius**-1) == I
 
 
 class TestLittleOmega:
@@ -82,8 +80,8 @@ class TestLittleOmega:
     def test_values(self, k, expected):
         assert little_omega(k) == expected
 
-    def test_formula(self):
-        assert little_omega.formula == "ω"
+    def test_repr(self):
+        assert repr(little_omega) == "little_omega"
 
 
 class TestBigOmega:
@@ -98,22 +96,22 @@ class TestBigOmega:
     def test_values(self, k, expected):
         assert big_omega(k) == expected
 
-    def test_formula(self):
-        assert big_omega.formula == "Ω"
+    def test_repr(self):
+        assert repr(big_omega) == "big_omega"
 
 
 class TestIdentity:
     def test_values(self):
-        assert identity(1) == 1
+        assert I(1) == 1
         for k in range(2, 100):
-            assert identity(k) == 0
+            assert I(k) == 0
 
-    def test_formula(self):
-        assert identity.formula == "I"
+    def test_repr(self):
+        assert repr(I) == "I"
 
     def test_inverse(self):
-        assert identity**-1 == identity
-        assert identity * (identity ** -1) == identity
+        assert I**-1 == I
+        assert I * (I**-1) == I
 
 
 class TestN:
@@ -121,24 +119,24 @@ class TestN:
     def test_values(self, k, expected):
         assert N(k) == expected
 
-    def test_formula(self):
-        assert N.formula == "N"
+    def test_repr(self):
+        assert repr(N) == "N"
 
     def test_inverse(self):
-        assert N * (N**-1) == identity
+        assert N * (N**-1) == I
 
 
 class TestUnit:
     @pytest.mark.parametrize("k, expected", [(x, 1) for x in range(1, 100)])
     def test_values(self, k, expected):
-        assert unit(k) == expected
+        assert u(k) == expected
 
-    def test_formula(self):
-        assert unit.formula == "u"
+    def test_repr(self):
+        assert repr(u) == "u"
 
     def test_inverse(self):
-        assert unit**-1 == mobius
-        assert unit * (unit ** -1) == identity
+        assert u**-1 == mobius
+        assert u * (u**-1) == I
 
 
 class TestNumberOfDivisors:
@@ -160,12 +158,12 @@ class TestNumberOfDivisors:
     def test_values(self, k, expected):
         assert d(k) == expected
 
-    def test_formula(self):
-        assert d.formula == 'd'
+    def test_repr(self):
+        assert repr(d) == "d"
 
     def test_inverse(self):
         assert d**-1 == mobius * mobius
-        assert d * (d ** -1) == identity
+        assert d * (d**-1) == I
 
 
 class TestDivisorsSum:
@@ -187,10 +185,8 @@ class TestDivisorsSum:
     def test_values(self, k, expected):
         assert sigma(k) == expected
 
-    def test_formula(self):
-        assert sigma.formula == 'σ'
+    def test_repr(self):
+        assert repr(sigma) == "sigma"
 
     def test_inverse(self):
-        assert sigma * (sigma ** -1) == identity
-
-
+        assert sigma * (sigma**-1) == I
