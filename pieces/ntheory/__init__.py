@@ -1,3 +1,4 @@
+from pieces.ntheory.canon import *
 from pieces.ntheory.factorization import *
 from pieces.ntheory.functions import *
 from pieces.ntheory.primes import *

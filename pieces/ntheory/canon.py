@@ -41,9 +41,16 @@ class Canon:
         """Return primes for the instance."""
         return self._prime_powers.keys()
 
+    def primes_count(self):
+        """ω"""
+        return len(self.primes())
+
     def powers(self):
         """Return powers for the instance in the same order as :meth:`primes`."""
         return self._prime_powers.values()
+
+    def powers_sum(self):
+        return sum(self.powers())
 
     def prime_powers(self):
         """Return sequence of (prime, power) for the instance."""
